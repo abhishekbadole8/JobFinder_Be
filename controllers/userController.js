@@ -8,15 +8,16 @@ const User = require("../module/userSchema");
 const userRegister = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
+
     // field empty validation
     if (!name || !email || !phone || !password) {
-      res.send(400);
+      res.status(400);
       throw new Error("All field's are Mandatory!");
     }
     //user email validation
     const isUserValid = await User.findOne({ email });
     if (isUserValid) {
-      res.send(400);
+      res.status(400);
       throw new Error("Email already in use!");
     }
     //hash Password
@@ -30,8 +31,8 @@ const userRegister = async (req, res) => {
 
     res.status(200).send(user);
   } catch (error) {
+    res.status(404);
     console.log(error);
-    res.send();
   }
 };
 
@@ -42,11 +43,11 @@ const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      res.send(400);
+      res.status(400);
       throw new Error("All field's are Mandatory!");
     }
     const user = await User.findOne({ email });
-
+    console.log(user);
     //compare password with hash password
     if (user && (await bcrypt.compare(password, user.password))) {
       const accessToken = jwt.sign(
@@ -58,7 +59,7 @@ const userLogin = async (req, res) => {
       );
       res.status(200).json({ accessToken });
     } else {
-      res.send(401);
+      res.status(401);
       throw new Error("Email or password Is InValid");
     }
   } catch (error) {
