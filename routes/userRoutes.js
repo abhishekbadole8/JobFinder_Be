@@ -4,5 +4,5 @@ const router = express.Router();
 
 router.post("/register", userRegister);
 router.post("/login", userLogin);
-router.get("/current", (req, res) => {});
+// router.get("/current");
 module.exports = router;

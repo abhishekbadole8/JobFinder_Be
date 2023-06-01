@@ -43,28 +43,29 @@ const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      res.status(400);
-      throw new Error("All field's are Mandatory!");
+      res
+        .status(400)
+        .json({ status: 400, error: "All field's are Mandatory!" });
+      
     }
     const user = await User.findOne({ email });
-    console.log(user);
     //compare password with hash password
     if (user && (await bcrypt.compare(password, user.password))) {
-      const accessToken = jwt.sign(
+      const AccessToken = jwt.sign(
         {
           user: { name: user.name, email: user.email, id: user.id },
         },
         process.env.ACCESS_TOKEN_SECERT,
-        { expiresIn: "15m" }
+        { expiresIn: "10h" }
       );
-      res.status(200).json({ accessToken });
+      res.status(200).json({ name: user.name, AccessToken });
     } else {
       res.status(401);
       throw new Error("Email or password Is InValid");
     }
   } catch (error) {
     res.status(404);
-    res.json({ error: "Cann't fetch data from db!" });
+    res.json({ error: error.message });
   }
 };
 

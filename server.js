@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+var cors = require('cors')
 const connectDb = require("./config/dbConnection");
 const errorHandler = require("./middleware/errorHandler");
 
@@ -8,8 +9,9 @@ const port = process.env.PORT || 8001;
 
 connectDb();
 app.use(express.json());
-
-app.use("/users", require("./routes/userRoutes"));
+app.use(cors())
+app.use("/api/jobs",require("./routes/newJobRoutes"))
+app.use("/api/users", require("./routes/userRoutes"));
 app.use(errorHandler);
 
 
