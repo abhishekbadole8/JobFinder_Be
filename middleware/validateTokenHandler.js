@@ -11,12 +11,12 @@ const validateToken = async (req, res, next) => {
           res.status(401);
           throw new Error("User is not authorized!",error.message);
         }
-        req.user = decoded.user; // Verify token relation with user
+        req.id = decoded.id; // Verify token relation with user
         next();
       });
 
       if (!token) {
-        throw new Error("User is not autthorized Or token is missing!!");
+        throw new Error("User is not authorized Or token is missing!!");
       }
     }
   } catch (error) {

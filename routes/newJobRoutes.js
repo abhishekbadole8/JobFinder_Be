@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const validateToken = require("../middleware/validateTokenHandler");
 const {
   getJobs,
   createJob,
@@ -7,12 +8,13 @@ const {
   updateJob,
   deleteJob,
 } = require("../controllers/jobController");
-const validateToken = require("../middleware/validateTokenHandler");
 
-router.route("/").get(getJobs)
-router.use(validateToken)
-
-router.route("/add").post(createJob);
-router.route("/:id").get(getJob).patch(updateJob).delete(deleteJob);
+router.get("/", getJobs);
+router.post("/add", validateToken, createJob);
+router
+  .route("/:id")
+  .get(validateToken, getJob)
+  .patch(validateToken, updateJob)
+  .delete(validateToken, deleteJob);
 
 module.exports = router;

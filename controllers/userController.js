@@ -43,29 +43,29 @@ const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      res
-        .status(400)
-        .json({ status: 400, error: "All field's are Mandatory!" });
-      
+      res.status(400).send("All field's are Mandatory!");
     }
     const user = await User.findOne({ email });
+
     //compare password with hash password
     if (user && (await bcrypt.compare(password, user.password))) {
+      //Generate token
       const AccessToken = jwt.sign(
         {
-          user: { name: user.name, email: user.email, id: user.id },
+          name: user.name,
+          id: user.id,
         },
         process.env.ACCESS_TOKEN_SECERT,
-        { expiresIn: "10h" }
+        { expiresIn: "1d" }
       );
-      res.status(200).json({ name: user.name, AccessToken });
+      res.status(200).send(AccessToken);
     } else {
       res.status(401);
       throw new Error("Email or password Is InValid");
     }
   } catch (error) {
     res.status(404);
-    res.json({ error: error.message });
+    res.send({ error: error.message });
   }
 };
 

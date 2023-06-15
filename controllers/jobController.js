@@ -46,7 +46,7 @@ const createJob = async (req, res) => {
       // throw new Error("All fields are mandatory!!");
     }
     const job = await Job.create({
-      user_id: req.user.id,
+      user_id: req.id,
       company_name,
       logo_url,
       job_position,

@@ -1,19 +1,17 @@
 const express = require("express");
 const app = express();
-var cors = require('cors')
+var cors = require("cors");
 const connectDb = require("./config/dbConnection");
 const errorHandler = require("./middleware/errorHandler");
-
 const dotenv = require("dotenv").config();
 const port = process.env.PORT || 8001;
 
 connectDb();
 app.use(express.json());
-app.use(cors())
-app.use("/api/jobs",require("./routes/newJobRoutes"))
-app.use("/api/users", require("./routes/userRoutes"));
+app.use(cors());
+app.use("/api/job", require("./routes/newJobRoutes"));
+app.use("/api/user", require("./routes/userRoutes"));
 app.use(errorHandler);
-
 
 app.listen(port, () => {
   console.log(`Connected to PORT : ${port}`);
