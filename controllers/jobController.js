@@ -1,11 +1,18 @@
 const Job = require("../module/jobSchema");
 
 //@desc Get user created Jobs
-//@route GET api/jobs
+//@route GET api/job
 //@access public
 const getJobs = async (req, res) => {
   try {
-    const jobs = await Job.find();
+    const { skills } = req.query;
+    let query = {};
+
+    if (skills) {
+      query.skills = { $all: skills.split(",") };
+    }
+
+    const jobs = await Job.find(query);
     res.status(200).json(jobs);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -42,7 +49,9 @@ const createJob = async (req, res) => {
       !about_company ||
       !skills
     ) {
-      res.status(400).json({ status: 400, error: "All field's are Mandatory!" });
+      res
+        .status(400)
+        .json({ status: 400, error: "All field's are Mandatory!" });
       // throw new Error("All fields are mandatory!!");
     }
     const job = await Job.create({
