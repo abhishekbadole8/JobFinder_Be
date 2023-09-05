@@ -15,7 +15,7 @@ const getJobs = async (req, res) => {
     const jobs = await Job.find(query);
     res.status(200).json(jobs);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -49,11 +49,9 @@ const createJob = async (req, res) => {
       !about_company ||
       !skills
     ) {
-      res
-        .status(400)
-        .json({ status: 400, error: "All field's are Mandatory!" });
-      // throw new Error("All fields are mandatory!!");
+      return res.status(400).json({ message: "All field's are Mandatory!" });
     }
+
     const job = await Job.create({
       user_id: req.id,
       company_name,
@@ -67,11 +65,9 @@ const createJob = async (req, res) => {
       about_company,
       skills,
     });
-    res.status(200).json("Job Created Successfully!!");
-    console.log(job);
+    res.status(200).json({ message: "Job added Successfully!!" });
   } catch (error) {
-    console.log(error);
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -82,8 +78,7 @@ const getJob = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
     if (!job) {
-      res.status(404);
-      throw new Error("Job not found!!");
+      return res.status(404).json({ message: "Job not found!!" });
     }
     res.status(201).json(job);
   } catch (error) {
@@ -95,28 +90,34 @@ const getJob = async (req, res) => {
 //@route PATCH api/jobs/:id
 //@access public
 const updateJob = async (req, res) => {
-  const job = await Job.findById(req.params.id);
-  if (!job) {
-    res.status(404);
-    throw new Error("Job not found!!");
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) {
+      return res.status(404).json({ message: "Job not found!!" });
+    }
+    const updatedJob = await Job.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    res.status(200).json(updatedJob);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
-  const updatedJob = await Job.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
-  res.status(200).json(updatedJob);
 };
 
 //@desc user DELETE created Job here
 //@route DELETE api/jobs/:id
 //@access public
 const deleteJob = async (req, res) => {
-  const job = await Job.findById(req.params.id);
-  if (!job) {
-    res.status(404);
-    throw new Error("Job not found!!");
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) {
+      return res.status(404).json({ message: "Job not found!!" });
+    }
+    await Job.findByIdAndDelete({ _id: req.params.id });
+    await res.status(200).json({ message: "Deleted Successfully!!" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
-  await Job.findByIdAndDelete({ _id: req.params.id });
-  await res.status(200).json({ message: "Deleted Successfully!!" });
 };
 
 module.exports = { getJobs, createJob, getJob, updateJob, deleteJob };
